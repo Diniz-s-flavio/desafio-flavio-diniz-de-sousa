@@ -1,49 +1,31 @@
-const cafe= {
-        code: "cafe",
-        description: "Cáfe",
-        value: 3.00
-    }
-const chantily= {
-        code: "chantily",
-        description: "Chantily (extra do Café)",
-        value: 1.50,
-        mainItem: cafe
-    }
-const suco= {
-        code: "suco",
-        description: "Suco Natural",
-        value: 6.20
-    }
-const sanduiche= {
-        code: "sanduiche",
-        description: "Sanduíche",
-        value: 6.50
-    }
-const queijo= {
-        code: "queijo",
-        description: "Queijo (extra do Sanduíche)",
-        value: 2.00,
-        mainItem: sanduiche
-    }
-const salgado= {
-        code: "salgado",
-        description: "Salgado",
-        value: 7.25
-    }
-const combo1= {
-        code: "combo1",
-        description: "1 Suco e 1 Sanduíche",
-        value: 9.50
-    }
-const combo2= {
-        code: "combo2",
-        description: "1 Café e 1 Sanduíche",
-        value: 7.50
-    }
+//Constante do Cardapio
+class Menu{
+    static CAFE = new Menu("cafe","Cáfe",3.00);
+    static CHANTILY = new Menu("chantily","Chantily (extra do Café)",1.50,this.CAFE);
+    static SUCO = new Menu("suco","Suco Natural",6.20);
+    static SANDUICHE = new Menu("sanduiche","Sanduíche",6.50);
+    static QUEIJO = new Menu("queijo","Queijo (extra do Sanduíche)",2.00,this.SANDUICHE);
+    static SALGADO = new Menu("salgado","Salgado",7.25);
+    static COMBO1 = new Menu("combo1","1 Suco e 1 Sanduíche",9.50);
+    static COMBO2 = new Menu("combo2","1 Café e 1 Sanduíche",7.50);
 
+    constructor(code,description,value,mainItem){
+        this.code = code;
+        this.description = description;
+        this.value = value;
+        this.mainItem = mainItem;
+    }
+}
+//Constante dos metodos de pagamento
+class PaymentMethod {
+    static CASH = new PaymentMethod('dinheiro');
+    static CREDIT = new PaymentMethod('credito');
+    static DEBT = new PaymentMethod('debito');
 
-const paymentMethods = {cash:'dinheiro', credit:'credito',debt: 'debito'}
-
+    constructor(description){
+        this.description = description;
+    }
+}
 
 class CaixaDaLanchonete {
     calcularValorDaCompra(metodoDePagamento, itens) {
@@ -54,7 +36,7 @@ class CaixaDaLanchonete {
             let totalValue = 0.00;
             for(let i=0; i< itens.length;i++){
                 let itemAndAmount = this.splitProductAmount(itens[i]);
-                if(itemAndAmount===String){
+                if(typeof(itemAndAmount)==="string"){
                     return 'Item inválido!';
                 }
 
@@ -97,11 +79,11 @@ class CaixaDaLanchonete {
     //Método para Calcular a taxa do credito, ou o desconto no dinheiro 
     calcFeeOrDiscount(paymentMethod,totalValue){
         let newTotalValue = totalValue;
-        if(paymentMethod===paymentMethods.cash){
+        if(paymentMethod==PaymentMethod.CASH.description){
                 newTotalValue = totalValue*0.95;
-            }else if(paymentMethod===paymentMethods.credit){
+            }else if(paymentMethod==PaymentMethod.CREDIT.description){
                 newTotalValue = totalValue*1.03;
-            }else if(paymentMethod===paymentMethods.debt){
+            }else if(paymentMethod==PaymentMethod.DEBT.description){
                 newTotalValue = totalValue;
             }else{
                 return "Forma de pagamento inválida!";
@@ -112,37 +94,37 @@ class CaixaDaLanchonete {
     //Método para Calcular o valor por tipo de item, e verifia se a item principal caso o item seja um extra 
     calcItemValue(itemType,amount,itens){
         let itemTotalValue = 0;
-        if(itemType===cafe.code){
-            itemTotalValue = cafe.value*amount;
-            }else if(itemType===chantily.code){
-                if(this.hasMainItem(itens,chantily.mainItem.code)){
-                    itemTotalValue = chantily.value*amount;
+        if(itemType===Menu.CAFE.code){
+            itemTotalValue = Menu.CAFE.value*amount;
+            }else if(itemType===Menu.CHANTILY.code){
+                if(this.hasMainItem(itens,Menu.CHANTILY.mainItem.code)){
+                    itemTotalValue = Menu.CHANTILY.value*amount;
                 }else{
                     return 'Item extra não pode ser pedido sem o principal';
                 }
 
-            }else if(itemType===suco.code){
-                itemTotalValue = suco.value*amount;
+            }else if(itemType===Menu.SUCO.code){
+                itemTotalValue = Menu.SUCO.value*amount;
 
-            }else if(itemType===sanduiche.code){
-                itemTotalValue = sanduiche.value*amount;
+            }else if(itemType===Menu.SANDUICHE.code){
+                itemTotalValue = Menu.SANDUICHE.value*amount;
 
-            }else if(itemType===queijo.code){
-                if(this.hasMainItem(itens,queijo.mainItem.code)){
-                    itemTotalValue = queijo.value*amount;
+            }else if(itemType===Menu.QUEIJO.code){
+                if(this.hasMainItem(itens,Menu.QUEIJO.mainItem.code)){
+                    itemTotalValue = Menu.QUEIJO.value*amount;
                 }else{
                     return 'Item extra não pode ser pedido sem o principal';
                 }
                 
 
-            }else if(itemType===salgado.code){
-                itemTotalValue = salgado.value*amount;
+            }else if(itemType===Menu.SALGADO.code){
+                itemTotalValue = Menu.SALGADO.value*amount;
 
-            }else if(itemType===combo1.code){
-                itemTotalValue = combo1.value*amount;
+            }else if(itemType===Menu.COMBO1.code){
+                itemTotalValue = Menu.COMBO1.value*amount;
 
-            }else if(itemType===combo2.code){
-                itemTotalValue = combo2.value*amount;
+            }else if(itemType===Menu.COMBO2.code){
+                itemTotalValue = Menu.COMBO2.value*amount;
 
             }else{
                 return "Item inválido!";
