@@ -9,7 +9,7 @@ class Menu{
     static COMBO1 = new Menu("combo1","1 Suco e 1 Sanduíche",9.50);
     static COMBO2 = new Menu("combo2","1 Café e 1 Sanduíche",7.50);
 
-    constructor(code,description,value,mainItem){
+    constructor(code,description,value,mainItem = null){
         this.code = code;
         this.description = description;
         this.value = value;
@@ -34,18 +34,16 @@ class CaixaDaLanchonete {
             return "Não há itens no carrinho de compra!";
         }else{
             let totalValue = 0.00;
-            for(let i=0; i< itens.length;i++){
-                let itemAndAmount = this.splitProductAmount(itens[i]);
+            for(const item of itens){
+                let itemAndAmount = this.splitProductAmount(item);
                 if(typeof(itemAndAmount)==="string"){
                     return 'Item inválido!';
                 }
 
                 let itemType = itemAndAmount[0];
                 let itemAmount = parseInt(itemAndAmount[1]);
-                if(itemAmount<1){
+                if(itemAmount<1 || isNaN(itemAmount)){
                     return "Quantidade inválida!";
-                }if(itemAmount==NaN){
-                    return 'Item inválido!';
                 }
 
                 let itemCalculatedValue = this.calcItemValue(itemType,itemAmount,itens);
@@ -53,7 +51,7 @@ class CaixaDaLanchonete {
                 if(typeof(itemCalculatedValue )=="string"){
                     return itemCalculatedValue;
                 }
-                totalValue = totalValue+ itemCalculatedValue;
+                totalValue += itemCalculatedValue;
                 
             }
             totalValue = this.calcFeeOrDiscount(metodoDePagamento,totalValue);
@@ -77,19 +75,17 @@ class CaixaDaLanchonete {
         return splitedItem;
     }
     //Método para Calcular a taxa do credito, ou o desconto no dinheiro 
-    calcFeeOrDiscount(paymentMethod,totalValue){
-        let newTotalValue = totalValue;
-        if(paymentMethod==PaymentMethod.CASH.description){
-                newTotalValue = totalValue*0.95;
-            }else if(paymentMethod==PaymentMethod.CREDIT.description){
-                newTotalValue = totalValue*1.03;
-            }else if(paymentMethod==PaymentMethod.DEBT.description){
-                newTotalValue = totalValue;
-            }else{
+    calcFeeOrDiscount(paymentMethod, totalValue) {
+        switch (paymentMethod) {
+            case PaymentMethod.CASH.description:
+                return totalValue * 0.95;
+            case PaymentMethod.CREDIT.description:
+                return totalValue * 1.03;
+            case PaymentMethod.DEBT.description:
+                return totalValue;
+            default:
                 return "Forma de pagamento inválida!";
-            }
-
-        return newTotalValue;
+        }
     }
     //Método para Calcular o valor por tipo de item, e verifia se a item principal caso o item seja um extra 
     calcItemValue(itemType,amount,itens){
@@ -134,11 +130,10 @@ class CaixaDaLanchonete {
     }
     //Verificação se há o item principal referente ao item extra no pedido
     hasMainItem(itens,mainItem){
-        for(let i=0; i< itens.length;i++){
-            let itemType = this.splitProductAmount(itens[i])[0];
+        for(const item of itens){
+            let itemType = this.splitProductAmount(item)[0];
 
             if(mainItem===itemType){
-                
                 return true;
             }
         };
